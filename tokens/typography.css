@@ -1,0 +1,72 @@
+/* 薈柚 Huì Yòu — Typography tokens
+   Headings: Noto Serif TC (serif, gentle/poetic, matches moodboard wordmark)
+   Body/UI:  Noto Sans TC (clean, legible at small sizes)
+   Loaded via Google Fonts CDN — see readme.md "Fonts" note: binaries could not be
+   downloaded into this project by the authoring tool, so @font-face below points
+   at Google's hosted static files directly (not the auto-generated CSS2 API, so the
+   URLs are stable). This IS the real intended typeface, not a substitution. */
+
+@font-face {
+  font-family: 'Noto Serif TC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notoseriftc/v22/XLYgIZb5bJNDXfx4hh42tX8AtQ.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Serif TC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notoseriftc/v22/XLY_IZb5bJNDXfx4hh42tW3rW9lMVQ.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Serif TC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notoseriftc/v22/XLY_IZb5bJNDXfx4hh42tWfmW9lMVQ.otf) format('opentype');
+}
+@font-face {
+  font-family: 'Noto Sans TC';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanstc/v36/-nF7OG829Oofr2wohFbTp9iFOSsLA_ZJ1g.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans TC';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanstc/v36/-nF7OG829Oofr2wohFbTp9iFOSsLA_ZJ1g.ttf) format('truetype');
+}
+@font-face {
+  font-family: 'Noto Sans TC';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/notosanstc/v36/-nF7OG829Oofr2wohFbTp9iFOSsLA_ZJ1g.ttf) format('truetype');
+}
+
+:root {
+  /* Base families */
+  --font-display: 'Noto Serif TC', 'Songti TC', serif;
+  --font-body: 'Noto Sans TC', 'PingFang TC', -apple-system, sans-serif;
+
+  /* Semantic type scale (px) */
+  --text-display-xl: 700 64px/1.25 var(--font-display);
+  --text-display-lg: 500 44px/1.3 var(--font-display);
+  --text-display-md: 500 32px/1.35 var(--font-display);
+  --text-title: 500 24px/1.4 var(--font-display);
+  --text-subtitle: 400 20px/1.5 var(--font-body);
+  --text-body: 400 16px/1.7 var(--font-body);
+  --text-body-sm: 400 14px/1.6 var(--font-body);
+  --text-caption: 400 12px/1.5 var(--font-body);
+  --text-button: 500 16px/1 var(--font-body);
+  --text-label: 500 13px/1.2 var(--font-body);
+
+  /* Letter spacing */
+  --tracking-display: 0.02em;
+  --tracking-label: 0.08em;
+}

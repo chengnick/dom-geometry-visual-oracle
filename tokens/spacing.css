@@ -1,0 +1,25 @@
+/* 薈柚 Huì Yòu — Spacing, radius & motion tokens (direction-agnostic) */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  /* Radius — Citrus Grove: crisper, less rounded than a typical "soft organic" brand */
+  --radius-sm: 6px; /* @kind radius */
+  --radius-md: 10px; /* @kind radius */
+  --radius-lg: 16px; /* @kind radius */
+  --radius-pill: 999px; /* @kind radius */
+
+  /* Motion — gentle, unhurried, no bounce */
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1); /* @kind other */
+  --duration-fast: 150ms; /* @kind other */
+  --duration-base: 250ms; /* @kind other */
+  --duration-slow: 400ms; /* @kind other */
+}

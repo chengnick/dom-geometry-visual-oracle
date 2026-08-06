@@ -1,0 +1,56 @@
+/* 薈柚 Huì Yòu — Color tokens: Direction B "Citrus Grove"
+   Deeper olive/moss + pomelo citrus + terracotta clay. Base scales, then semantic aliases. */
+:root {
+  /* Olive (primary) */
+  --color-olive-900: #2B3520; /* @kind color */
+  --color-olive-700: #4B5D3A; /* @kind color */
+  --color-olive-500: #6E7F52; /* @kind color */
+  --color-olive-100: #E4E9D6; /* @kind color */
+
+  /* Cream / neutrals */
+  --color-cream-200: #EFE6C9; /* @kind color */
+  --color-cream-100: #F7F3E4; /* @kind color */
+  --color-white: #FFFFFF; /* @kind color */
+  --color-ink-900: #332E22; /* @kind color */
+  --color-ink-600: #7A6B4A; /* @kind color */
+  --color-line-200: #E1D3A8; /* @kind color */
+
+  /* Citrus (accent) */
+  --color-citrus-600: #C97A2C; /* @kind color */
+  --color-citrus-500: #D98C3D; /* @kind color */
+  --color-citrus-100: #F6E3C6; /* @kind color */
+
+  /* Terracotta (accent / CTA) */
+  --color-terracotta-600: #9C4630; /* @kind color */
+  --color-terracotta-500: #B5563C; /* @kind color */
+  --color-terracotta-100: #F0DAD1; /* @kind color */
+
+  /* Feedback */
+  --color-success-600: #4E6B3A; /* @kind color */
+  --color-error-600: #A8402C; /* @kind color */
+
+  /* ---- Semantic aliases ---- */
+  --surface-page: var(--color-cream-100);
+  --surface-sunken: var(--color-cream-200);
+  --surface-card: var(--color-white);
+  --surface-inverse: var(--color-olive-900);
+
+  --text-primary: var(--color-ink-900);
+  --text-secondary: var(--color-ink-600);
+  --text-on-accent: var(--color-white);
+  --text-link: var(--color-terracotta-500);
+  --text-link-hover: var(--color-terracotta-600);
+
+  --border-subtle: var(--color-line-200);
+  --border-strong: var(--color-olive-500);
+
+  --accent-primary: var(--color-olive-700);
+  --accent-primary-hover: var(--color-olive-900);
+  --accent-secondary: var(--color-terracotta-500);
+  --accent-secondary-hover: var(--color-terracotta-600);
+  --accent-citrus: var(--color-citrus-500);
+  --accent-citrus-hover: var(--color-citrus-600);
+
+  --feedback-success: var(--color-success-600);
+  --feedback-error: var(--color-error-600);
+}

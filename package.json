@@ -1,0 +1,23 @@
+{
+  "name": "gemini",
+  "version": "1.0.0",
+  "description": "- `index.html` — 網站主頁（單頁滾動：品牌故事 / 成分溯源 / 薈柚堅持） - `styles.css` — 引入 tokens/ 內所有樣式與字體 - `tokens/` — 顏色、字體、間距、陰影變數 - `assets/` — 圖片素材",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test:visual": "playwright test tests/visual.spec.js",
+    "test:unit": "playwright test tests/diff.spec.js --project=chromium",
+    "layout:capture": "node ui_layout_checker/capture.js",
+    "layout:compare": "node ui_layout_checker/compare.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.61.1",
+    "@types/node": "^26.1.1"
+  }
+}

@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- 基本 SEO & 社群分享標籤 -->
+  <title>薈柚 Huì Yòu | 取自山野，還於肌膚 — 天然冷製手工皂</title>
+  <meta name="description"
+    content="薈柚 Huì Yòu 堅信純粹的保養源於天然。我們以冷製工藝，將當季植物的精華完整封存於每一塊手工皂中，讓每次沐浴都成為一場植萃的感官洗禮。提供柚花、金盞花、薰衣草等純淨配方。">
+  <meta property="og:title" content="薈柚 Huì Yòu | 天然冷製手工皂">
+  <meta property="og:description" content="取自山野，還於肌膚。嚴選全球優質產地精油，純淨配方環境友善，洗去塵囂，留下最純粹的自在。">
+  <!-- og:image / og:url 必須為絕對網址,社群爬蟲才抓得到;換正式網域時記得同步更新這三行 -->
+  <meta property="og:image" content="https://example.com/assets/moodboard-hero.webp">
+  <meta property="og:url" content="https://example.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_TW">
+  <link rel="canonical" href="https://example.com/">
+
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* 基礎與通用樣式 */
+    body {
+      margin: 0;
+      background: var(--surface-page);
+      font-family: var(--font-body);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: var(--text-link);
+      text-decoration: none;
+      transition: color 0.2s ease;
+    }
+
+    a:hover {
+      color: var(--text-link-hover);
+    }
+
+    .wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    section {
+      padding: 96px 0;
+    }
+
+    /* 導覽列 */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(247, 243, 228, 0.9);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .nav .wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 40px;
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: bold;
+      color: var(--color-olive-700);
+    }
+
+    .links {
+      display: flex;
+      gap: 24px;
+      font: var(--text-body-sm);
+    }
+
+    .links a {
+      color: var(--text-primary);
+    }
+
+    .links a:hover {
+      color: var(--color-olive-700);
+    }
+
+    /* Hero 區塊 */
+    .hero {
+      text-align: center;
+      padding: 120px 0 80px;
+    }
+
+    .hero .eyebrow {
+      font: var(--text-label);
+      letter-spacing: var(--tracking-label);
+      color: var(--accent-secondary);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .hero h1 {
+      font-family: var(--font-display);
+      font-size: 56px;
+      font-weight: 500;
+      margin: 0 0 20px;
+      color: var(--color-olive-900);
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font: var(--text-subtitle);
+      color: var(--text-secondary);
+      max-width: 560px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .hero-img {
+      margin: 56px auto 0;
+      max-width: 820px;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .hero-img img {
+      width: 100%;
+      display: block;
+      height: auto;
+    }
+
+    /* 品牌故事與薈柚堅持的通用網格 */
+    .grid-split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 96px 40px;
+      box-sizing: border-box;
+    }
+
+    .swatch {
+      height: 400px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      background-size: cover;
+      background-position: center;
+    }
+
+    .grid-split h2 {
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 500;
+      color: var(--color-olive-900);
+      margin: 0 0 20px;
+    }
+
+    .grid-split p {
+      font: var(--text-body);
+      color: var(--text-secondary);
+      margin: 0 0 16px;
+      line-height: 1.7;
+    }
+
+    /* 成分溯源區塊 */
+    .ingredients {
+      background: var(--surface-sunken);
+    }
+
+    .ingredients h2 {
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 500;
+      text-align: center;
+      margin: 0 0 12px;
+      color: var(--color-olive-900);
+    }
+
+    .ingredients .sub {
+      text-align: center;
+      font: var(--text-body);
+      color: var(--text-secondary);
+      margin: 0 0 56px;
+    }
+
+    .ing-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+    }
+
+    .ing-card {
+      background: var(--surface-card);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+    }
+
+    .ing-card .dot {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+    }
+
+    .ing-card h3 {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 500;
+      margin: 0 0 8px;
+      color: var(--text-primary);
+    }
+
+    .ing-card p {
+      font: var(--text-caption);
+      color: var(--text-secondary);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* 薈柚堅持清單項目 */
+    .sustain-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .sustain-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .sustain-item .num {
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--accent-secondary);
+      flex: none;
+      width: 32px;
+      font-weight: bold;
+    }
+
+    .sustain-item h4 {
+      margin: 0 0 4px;
+      font: var(--text-subtitle);
+      color: var(--text-primary);
+    }
+
+    .sustain-item p {
+      margin: 0;
+      font: var(--text-body-sm);
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ⚡ 精選商品區塊 */
+    .products {
+      background: var(--surface-page);
+    }
+
+    .products h2 {
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 500;
+      text-align: center;
+      margin: 0 0 12px;
+      color: var(--color-olive-900);
+    }
+
+    .products .sub {
+      text-align: center;
+      font: var(--text-body);
+      color: var(--text-secondary);
+      margin: 0 0 40px;
+    }
+
+    /* 分類標籤排版 */
+    .prod-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      padding: 8px 20px;
+      border-radius: var(--radius-full, 999px);
+      font: var(--text-body-sm);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      border-color: var(--color-olive-700);
+      color: var(--color-olive-700);
+    }
+
+    .tab-btn.active {
+      background: var(--color-olive-700);
+      border-color: var(--color-olive-700);
+      color: #ffffff;
+    }
+
+    .prod-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+    }
+
+    .prod-card {
+      background: var(--surface-card);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+    }
+
+    .prod-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .prod-card.hide {
+      display: none;
+    }
+
+    .prod-img {
+      height: 260px;
+      background-size: cover;
+      background-position: center;
+      background-color: var(--surface-sunken);
+    }
+
+    .prod-info {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .prod-info h3 {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 500;
+      margin: 0 0 8px;
+      color: var(--text-primary);
+    }
+
+    .prod-info .desc {
+      font: var(--text-body-sm);
+      color: var(--text-secondary);
+      margin: 0 0 20px;
+      line-height: 1.6;
+      flex-grow: 1;
+    }
+
+    .prod-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+
+    .prod-price {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--color-olive-900);
+    }
+
+    /* 導向 LINE 的標準化按鈕 */
+    .btn-line {
+      background: var(--color-olive-700);
+      color: #ffffff !important;
+      padding: 10px 18px;
+      border-radius: var(--radius-md);
+      font: var(--text-label);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+    }
+
+    .btn-line:hover {
+      background: var(--color-olive-900);
+    }
+
+    /* ⚡ 聯絡區塊 */
+    .contact {
+      background: var(--surface-sunken);
+      text-align: center;
+    }
+
+    .contact h2 {
+      font-family: var(--font-display);
+      font-size: 34px;
+      font-weight: 500;
+      margin: 0 0 12px;
+      color: var(--color-olive-900);
+    }
+
+    .contact .sub {
+      font: var(--text-body);
+      color: var(--text-secondary);
+      margin: 0 0 40px;
+    }
+
+    .contact-container {
+      max-width: 480px;
+      margin: 0 auto;
+      background: var(--surface-card);
+      padding: 40px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .qr-box {
+      width: 180px;
+      height: 180px;
+      background-size: cover;
+      background-position: center;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background-color: var(--surface-page);
+    }
+
+    .contact-info {
+      font: var(--text-body-sm);
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin: 8px 0 0;
+    }
+
+    /* 頁尾 */
+    footer {
+      border-top: 1px solid var(--border-subtle);
+      padding: 40px 0;
+      text-align: center;
+      font: var(--text-caption);
+      color: var(--text-secondary);
+      background: var(--surface-page);
+    }
+
+    /* 📱 RWD 手機版防破版響應式優化 */
+    @media (max-width: 768px) {
+      .wrap {
+        padding: 0 20px;
+      }
+
+      section {
+        padding: 64px 0;
+      }
+
+      .nav .wrap {
+        padding: 16px 20px;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .links {
+        gap: 16px;
+      }
+
+      .hero {
+        padding: 64px 0 40px;
+      }
+
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero p {
+        font-size: 16px;
+      }
+
+      .hero-img {
+        margin-top: 32px;
+      }
+
+      .grid-split {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding: 40px 20px;
+      }
+
+      .swatch {
+        height: 260px;
+      }
+
+      .grid-split h2 {
+        font-size: 26px;
+      }
+
+      .ingredients .sub,
+      .products .sub {
+        margin-bottom: 32px;
+      }
+
+      .ing-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+
+      .ing-card {
+        padding: 16px;
+      }
+
+      .prod-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .prod-img {
+        height: 220px;
+      }
+
+      .contact-container {
+        padding: 24px;
+      }
+    }
+
+    @media (max-width: 480px) {
+
+      /* 針對 375px 的極致防破版 */
+      .ing-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .prod-tabs {
+        justify-content: flex-start;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 8px;
+        margin-bottom: 24px;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .prod-tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab-btn {
+        flex: 0 0 auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!--
+    TODO(v1.0 前必須完成):
+    1. LINE 官方帳號確認後,全站搜尋取代 @YOUR_LINE_ID(共 7 處:6 個商品按鈕 + 聯絡區大按鈕)
+    2. 換上真實 QR code 圖:assets/line-official-qrcode.png
+    3. 確認 service@huiyou.com 信箱是否存在,不存在先移除該行
+  -->
+
+  <!-- 導覽列 -->
+  <div class="nav">
+    <div class="wrap">
+      <div class="logo">薈柚 Huì Yòu</div>
+      <div class="links">
+        <a href="#story">品牌故事</a>
+        <a href="#ingredients">成分溯源</a>
+        <a href="#sustain">薈柚堅持</a>
+        <a href="#products">精選商品</a>
+        <a href="#contact">聯絡詢問</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hero 視覺區 -->
+  <section class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Since 2021 · 手工皂坊</div>
+      <h1>取自山野，還於肌膚</h1>
+      <p>薈柚堅信純粹的保養源於天然。我們以冷製工藝，將當季植物的精華萃取為純淨精油，完整封存於每一塊皂中，讓每次沐浴都成為一場植萃的感官洗禮。</p>
+      <div class="hero-img">
+        <!-- TODO: 補上圖片實際像素尺寸,例如 width="1640" height="1093"
+             (Windows: 對圖檔右鍵→內容→詳細資料可查),可消除 CLS 版面跳動 -->
+        <img src="assets/moodboard-hero.webp" alt="薈柚 手工皂視覺" fetchpriority="high">
+      </div>
+    </div>
+  </section>
+
+  <!-- 品牌故事區塊 -->
+  <section class="grid-split" id="story">
+    <div class="swatch" style="background-image: url('assets/leaf-botanical-photo.webp');"></div>
+    <div>
+      <h2>薈萃自然，柚見生活美好</h2>
+      <p>薈，是匯集生活中的美好瞬間；柚，是回歸純樸後的舒緩。我們相信手工皂不只是清潔工具，更是讓生活重回平衡的儀式。在繁忙的日常中，『薈柚』陪伴您洗去塵囂，留下最純粹的自在。</p>
+    </div>
+  </section>
+
+  <!-- 成分溯源區塊 -->
+  <section class="ingredients" id="ingredients">
+    <div class="wrap">
+      <h2>成分溯源</h2>
+      <p class="sub">每一款配方都標示來源與功效，讓您安心使用</p>
+      <div class="ing-grid">
+        <div class="ing-card">
+          <div class="dot" style="background: linear-gradient(135deg, #E9D9A6, #D2B36B);"></div>
+          <h3>柚花萃取</h3>
+          <p>台灣在地柚園契作，溫和潔淨不緊繃</p>
+        </div>
+        <div class="ing-card">
+          <div class="dot" style="background: linear-gradient(135deg, #EFCB7C, #D9954A);"></div>
+          <h3>金盞花</h3>
+          <p>舒緩泛紅，修護敏弱肌膚屏障</p>
+        </div>
+        <div class="ing-card">
+          <div class="dot" style="background: linear-gradient(135deg, #D9D3C2, #B7AE93);"></div>
+          <h3>薰衣草</h3>
+          <p>法國進口精油，助眠舒壓</p>
+        </div>
+        <div class="ing-card">
+          <div class="dot" style="background: linear-gradient(135deg, #CBD2A8, #9EAB74);"></div>
+          <h3>迷迭香</h3>
+          <p>提振精神，晨間沐浴首選</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 薈柚堅持區塊 -->
+  <section class="grid-split" id="sustain">
+    <div class="sustain-list">
+      <h2>薈柚堅持</h2>
+      <div class="sustain-item">
+        <span class="num">01</span>
+        <div>
+          <h4>純淨防護</h4>
+          <p>採用真空密封隔離潮濕，維持手工冷製皂的最佳狀態。</p>
+        </div>
+      </div>
+      <div class="sustain-item">
+        <span class="num">02</span>
+        <div>
+          <h4>嚴選進口</h4>
+          <p>精選全球優質產地精油，成分純淨、來源透明。</p>
+        </div>
+      </div>
+      <div class="sustain-item">
+        <span class="num">03</span>
+        <div>
+          <h4>環境友善</h4>
+          <p>堅持純淨配方，使用後可自然分解，不傷水資源。</p>
+        </div>
+      </div>
+    </div>
+    <div class="swatch" style="background-image: url('assets/soap-lineup-photo.webp');"></div>
+  </section>
+
+  <!-- 精選商品區塊 (單頁過濾) -->
+  <section class="products" id="products">
+    <div class="wrap">
+      <h2>精選經典手工皂</h2>
+      <p class="sub">溫和手工冷製，保留天然甘油滋潤成分</p>
+
+      <!-- 分類切換標籤 -->
+      <div class="prod-tabs">
+        <button type="button" class="tab-btn active" onclick="filterProducts('all', this)">全部商品</button>
+        <button type="button" class="tab-btn" onclick="filterProducts('citrus', this)">經典柚香</button>
+        <button type="button" class="tab-btn" onclick="filterProducts('sensitive', this)">敏弱修護</button>
+        <button type="button" class="tab-btn" onclick="filterProducts('relax', this)">舒壓晨沐</button>
+      </div>
+
+      <div class="prod-grid">
+
+        <!-- 柚花皂 -->
+        <div class="prod-card" data-category="citrus">
+          <div class="prod-img"
+            style="background-image: url('assets/product-citrus-soap.png'); background-color: #E9D9A6;"></div>
+          <div class="prod-info">
+            <h3>經典柚花凝萃皂</h3>
+            <p class="desc">契作柚花溫和配方，洗後散發淡淡柚香，為日常帶來一抹清涼舒緩。</p>
+            <div class="prod-meta">
+              <span class="prod-price">NT$ 320</span>
+              <a href="https://line.me/R/ti/p/@YOUR_LINE_ID" class="btn-line" target="_blank"
+                rel="noopener noreferrer">LINE 詢問</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 金盞花皂 -->
+        <div class="prod-card" data-category="sensitive">
+          <div class="prod-img"
+            style="background-image: url('assets/product-calendula-soap.png'); background-color: #EFCB7C;"></div>
+          <div class="prod-info">
+            <h3>金盞花舒緩修護皂</h3>
+            <p class="desc">富含經典修護成分，溫和滋潤，專為敏弱與換季不適的肌膚設計。</p>
+            <div class="prod-meta">
+              <span class="prod-price">NT$ 350</span>
+              <a href="https://line.me/R/ti/p/@YOUR_LINE_ID" class="btn-line" target="_blank"
+                rel="noopener noreferrer">LINE 詢問</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 薰衣草皂 -->
+        <div class="prod-card" data-category="relax">
+          <div class="prod-img"
+            style="background-image: url('assets/product-lavender-soap.png'); background-color: #D9D3C2;"></div>
+          <div class="prod-info">
+            <h3>高地薰衣草靜心皂</h3>
+            <p class="desc">精選南法薰衣草精油，舒緩緊繃的感官，是夜間洗去一身疲憊的完美首選。</p>
+            <div class="prod-meta">
+              <span class="prod-price">NT$ 320</span>
+              <a href="https://line.me/R/ti/p/@YOUR_LINE_ID" class="btn-line" target="_blank"
+                rel="noopener noreferrer">LINE 詢問</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 迷迭香皂 -->
+        <div class="prod-card" data-category="relax">
+          <div class="prod-img"
+            style="background-image: url('assets/product-rosemary-soap.png'); background-color: #CBD2A8;"></div>
+          <div class="prod-info">
+            <h3>迷迭香提神晨沐皂</h3>
+            <p class="desc">清新的草本香氣提振精神，平衡肌膚油脂分泌，帶給您充滿活力的早晨。</p>
+            <div class="prod-meta">
+              <span class="prod-price">NT$ 320</span>
+              <a href="https://line.me/R/ti/p/@YOUR_LINE_ID" class="btn-line" target="_blank"
+                rel="noopener noreferrer">LINE 詢問</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 柚籽皂 -->
+        <div class="prod-card" data-category="citrus">
+          <div class="prod-img"
+            style="background-image: url('assets/product-yuzu-scrub.png'); background-color: #F4E7B4;"></div>
+          <div class="prod-info">
+            <h3>柚籽溫和去角質皂</h3>
+            <p class="desc">研磨天然柚籽微粒，溫和帶走老廢角質，恢復肌膚光滑細緻觸感。</p>
+            <div class="prod-meta">
+              <span class="prod-price">NT$ 340</span>
+              <a href="https://line.me/R/ti/p/@YOUR_LINE_ID" class="btn-line" target="_blank"
+                rel="noopener noreferrer">LINE 詢問</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 燕麥皂 -->
+        <div class="prod-card" data-category="sensitive">
+          <div class="prod-img"
+            style="background-image: url('assets/product-oatmeal-soap.png'); background-color: #E3DCCE;"></div>
+          <div class="prod-info">
+            <h3>燕麥蜜糖滋潤皂</h3>
+            <p class="desc">細緻燕麥粉搭配天然蜂蜜，深層鎖水滋養，乾性與極致敏弱肌適用。</p>
+            <div class="prod-meta">
+              <span class="prod-price">NT$ 360</span>
+              <a href="https://line.me/R/ti/p/@YOUR_LINE_ID" class="btn-line" target="_blank"
+                rel="noopener noreferrer">LINE 詢問</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 聯絡與導流區塊 -->
+  <section class="contact" id="contact">
+    <div class="wrap">
+      <h2>與薈柚聊聊</h2>
+      <p class="sub">任何產品疑問或客製訂購需求，歡迎加入 LINE 官方帳號由專人為您服務</p>
+
+      <div class="contact-container">
+        <!-- LINE QR Code 佔位底色 -->
+        <div class="qr-box"
+          style="background-image: url('assets/line-official-qrcode.png'); background-color: var(--surface-sunken);">
+        </div>
+
+        <!-- 點擊加好友大按鈕 -->
+        <a href="https://line.me/R/ti/p/@YOUR_LINE_ID" class="btn-line" style="padding: 14px 28px; font-size: 16px;"
+          target="_blank" rel="noopener noreferrer">
+          💬 加 LINE 官方帳號好友
+        </a>
+
+        <div class="contact-info">
+          <p>客服時間：週一至週五 10:00 - 18:00</p>
+          <!-- TODO: 確認網域與信箱真實可收信後再保留 -->
+          <p>官方信箱：service@huiyou.com</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 頁尾 -->
+  <footer>
+    <div class="wrap">© 2026 薈柚 Huì Yòu · 手工天然皂</div>
+  </footer>
+
+  <!-- 商品過濾腳本 -->
+  <script>
+    function filterProducts(category, clickedBtn) {
+      const buttons = document.querySelectorAll('.tab-btn');
+      buttons.forEach(btn => btn.classList.remove('active'));
+      clickedBtn.classList.add('active');
+
+      const cards = document.querySelectorAll('.prod-card');
+      cards.forEach(card => {
+        const itemCategory = card.getAttribute('data-category');
+        if (category === 'all' || itemCategory === category) {
+          card.classList.remove('hide');
+        } else {
+          card.classList.add('hide');
+        }
+      });
+    }
+  </script>
+</body>
+
+</html>

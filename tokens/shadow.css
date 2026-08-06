@@ -1,0 +1,7 @@
+/* 薈柚 Huì Yòu — Elevation tokens: warm, low-contrast shadows (clay/soil tint, not pure black) */
+:root {
+  --shadow-sm: 0 1px 4px -1px rgba(70, 50, 20, 0.16); /* @kind shadow */
+  --shadow-md: 0 6px 16px -6px rgba(70, 50, 20, 0.22); /* @kind shadow */
+  --shadow-lg: 0 10px 26px -10px rgba(90, 60, 20, 0.28); /* @kind shadow */
+  --shadow-hairline: inset 0 0 0 1px rgba(51, 46, 34, 0.08); /* @kind shadow */
+}

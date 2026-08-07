@@ -1,0 +1,96 @@
+name: UI Layout Oracle
+
+# 單站視覺回歸 oracle：每個 PR 自動判斷版面有沒有壞。
+# 不靠 pixel-diff、不存截圖 —— 比對 DOM geometry baseline。
+on:
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch: # 允許手動觸發，方便驗證
+
+# runner 釘在 windows：baseline 在 Windows 上擷取，DOM geometry 含字型度量、
+# 跨 OS 渲染會有 px 級差異，同環境比對才不會假性 fail。
+# （更 scalable 的做法是把擷取/比對都釘在 Playwright 官方 Linux 容器，見 README「已知限制」。）
+jobs:
+  layout-oracle:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+      pull-requests: write # 供 github-script 貼 PR comment
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Install Playwright browser (chromium)
+        run: npx playwright install chromium
+
+      # 底層保險：純邏輯單元測試（容差公式 + 三級判定）要先綠
+      - name: Unit tests (diff.js pure logic)
+        run: npm run test:unit
+
+      # 整合層：擷取真頁面三斷點 → 比對 baseline → 三級判定
+      # compare.js 在總判定為 fail 時 exit 1，讓這一步紅燈
+      - name: Layout oracle (capture → diff → verdict)
+        run: npm run layout:compare
+
+      # 不論成敗都上傳報告，方便在 PR 上檢視細節
+      - name: Upload diff report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: layout-report
+          path: ui_layout_checker/report.json
+
+      # 把判定摘要貼成 PR comment（同一條會更新，不洗版）
+      - name: Comment report on PR
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = 'ui_layout_checker/report.json';
+            if (!fs.existsSync(path)) { core.info('無報告可貼'); return; }
+            const r = JSON.parse(fs.readFileSync(path, 'utf-8'));
+            const icon = { fail: '🔴', warn: '🟡', pass: '🟢' };
+            let body = `### ${icon[r.overall]} UI Layout Oracle — 總判定：**${r.overall.toUpperCase()}**\n\n`;
+            for (const bp of r.breakpoints) {
+              body += `<details><summary>${icon[bp.verdict]} \`${bp.name}\` — ${bp.verdict.toUpperCase()}`;
+              body += ` (${bp.findings.length} 個元素有差異)</summary>\n\n`;
+              if (bp.findings.length === 0) {
+                body += '全部元素在容差內。\n';
+              } else {
+                for (const f of bp.findings) {
+                  body += `- ${icon[f.verdict]} \`${f.selector}\`\n`;
+                  for (const d of f.diffs) {
+                    const detail = 'delta' in d
+                      ? `${d.field}: ${d.from} → ${d.to}（差 ${d.delta}px，容差 ±${d.tolerance}px）`
+                      : `${d.field}: ${JSON.stringify(d.from)} → ${JSON.stringify(d.to)}`;
+                    body += `  - \`[${d.severity}]\` ${detail}\n`;
+                  }
+                }
+              }
+              body += `\n</details>\n`;
+            }
+            body += `\n> 不靠 pixel-diff、不存截圖：比對 DOM geometry baseline。`;
+
+            const marker = '<!-- ui-layout-oracle -->';
+            body = marker + '\n' + body;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number,
+            });
+            const existing = comments.find(c => c.body && c.body.includes(marker));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner, repo: context.repo.repo, comment_id: existing.id, body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner, repo: context.repo.repo, issue_number: context.issue.number, body,
+              });
+            }

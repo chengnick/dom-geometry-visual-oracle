@@ -58,24 +58,25 @@ jobs:
             if (!fs.existsSync(path)) { core.info('無報告可貼'); return; }
             const r = JSON.parse(fs.readFileSync(path, 'utf-8'));
             const icon = { fail: '🔴', warn: '🟡', pass: '🟢' };
+            const fmt = (d) => 'delta' in d
+              ? `${d.field}: ${d.from} → ${d.to}（差 ${d.delta}px，容差 ±${d.tolerance}px）`
+              : `${d.field}: ${JSON.stringify(d.from)} → ${JSON.stringify(d.to)}`;
             let body = `### ${icon[r.overall]} UI Layout Oracle — 總判定：**${r.overall.toUpperCase()}**\n\n`;
-            for (const bp of r.breakpoints) {
-              body += `<details><summary>${icon[bp.verdict]} \`${bp.name}\` — ${bp.verdict.toUpperCase()}`;
-              body += ` (${bp.findings.length} 個元素有差異)</summary>\n\n`;
-              if (bp.findings.length === 0) {
-                body += '全部元素在容差內。\n';
-              } else {
-                for (const f of bp.findings) {
-                  body += `- ${icon[f.verdict]} \`${f.selector}\`\n`;
-                  for (const d of f.diffs) {
-                    const detail = 'delta' in d
-                      ? `${d.field}: ${d.from} → ${d.to}（差 ${d.delta}px，容差 ±${d.tolerance}px）`
-                      : `${d.field}: ${JSON.stringify(d.from)} → ${JSON.stringify(d.to)}`;
-                    body += `  - \`[${d.severity}]\` ${detail}\n`;
+            for (const site of r.sites) {
+              body += `#### ${icon[site.verdict]} \`${site.name}\` — ${site.verdict.toUpperCase()}\n\n`;
+              for (const bp of site.breakpoints) {
+                body += `<details><summary>${icon[bp.verdict]} \`${bp.name}\` — ${bp.verdict.toUpperCase()}`;
+                body += ` (${bp.findings.length} 個元素有差異)</summary>\n\n`;
+                if (bp.findings.length === 0) {
+                  body += '全部元素在容差內。\n';
+                } else {
+                  for (const f of bp.findings) {
+                    body += `- ${icon[f.verdict]} \`${f.selector}\`\n`;
+                    for (const d of f.diffs) body += `  - \`[${d.severity}]\` ${fmt(d)}\n`;
                   }
                 }
+                body += `\n</details>\n`;
               }
-              body += `\n</details>\n`;
             }
             body += `\n> 不靠 pixel-diff、不存截圖：比對 DOM geometry baseline。`;
 

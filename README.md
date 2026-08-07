@@ -19,7 +19,7 @@
 │ (含 visible/樣式) │    │ (逐選擇器逐欄位)     │    │ → CI 紅燈         │
 └──────────────────┘    └────────────────────┘    └──────────────────┘
         │                                                    │
-        └──── baselines/huiyou/{mobile,tablet,desktop}.json ─┘
+        └──── baselines/<site>/{mobile,tablet,desktop}.json ─┘
               版控、量小（KB 級）、更新須明確 --update-baseline
 ```
 
@@ -77,8 +77,10 @@
 
 把「能在本地跑的 checker」變成「跑在 PR 上的守門員」，做了三件事：
 
-### ① 多斷點擷取
+### ① 多斷點 × 多站點擷取
 三個斷點各存一份 baseline：`mobile (375)` / `tablet (768)` / `desktop (1280)`。單頁滾動站在不同寬度會 reflow，製造測試表面積，也讓 RWD 壞掉時的位移抓得到。baseline 結構為 `{ meta, elements }`，`meta` 記錄 commit sha、viewport、擷取時間。
+
+站點寫成 **registry**（`config.js` 的 `SITES`）：每個站點 = `{ name, url, selectors }`，baseline 落在 `baselines/<site>/`。**接一個新站只要在 registry 加一筆**（url 可以是 `file://` 靜態檔或 `http://` dev server），擷取/比對/CI 全部自動涵蓋——這正是「單站 baseline 不會爆」定位下、仍能水平擴充到多站的設計。`--site=<name>` 可只跑單一站點。
 
 ### ② 三級判定（避免 sub-pixel 抖動就 fail）
 兩條容差線，把差異分三級：
@@ -105,8 +107,12 @@ npm install                 # 首次執行前（含 npx playwright install）
 
 npm run test:unit           # diff.js 純邏輯單元測試（不開瀏覽器，最快）
 npm run test:visual         # 視覺回歸（三引擎截圖比對）
-npm run layout:compare      # oracle：擷取三斷點 → 比對 → 三級判定報告，fail 時 exit 1
-npm run layout:update       # 重抓 baseline（= capture.js --update-baseline）
+npm run layout:compare      # oracle：擷取所有站點三斷點 → 比對 → 三級判定報告，fail 時 exit 1
+npm run layout:update       # 重抓所有站點 baseline（= capture.js --update-baseline）
+
+# 只跑單一站點（比對 / 更新）
+node ui_layout_checker/compare.js --site=huiyou
+npm run layout:update -- --site=huiyou
 
 npx playwright show-report  # 視覺化截圖比對報告
 ```
@@ -119,7 +125,7 @@ npx playwright show-report  # 視覺化截圖比對報告
 
 - **跨 OS 字型度量**：DOM geometry 含字型度量，跨作業系統渲染有 px 級差異。目前靠「CI runner 釘 `windows-latest`、對齊 baseline 擷取環境」規避；更 scalable 的做法是把擷取與比對都釘在 Playwright 官方 Linux 容器，讓 dev 與 CI 用同一渲染環境。
 - **抓不到的壞法**：不比像素 → 抓不到 bounding box 不變的視覺壞法（元素重疊、破圖、對比度不足、陰影/圓角跑掉）。字級與顏色因為有抓 computed style，仍在守備範圍內。
-- **第二個受測對象**：Sticker Studio Pro（Vite+React+TS，動態 UI）尚未接上，接上後可驗證動態 UI 也 hold 得住。
+- **第二個受測對象**：架構已是多站點 registry，接新站只要在 `config.js` 的 `SITES` 加一筆。原規劃的 Sticker Studio Pro（Vite+React+TS，動態 UI）尚未接上——接上後 CI 需先啟 Vite dev server，再讓 `url` 指向 `http://localhost:5173`，即可驗證動態 UI 也 hold 得住。
 
 ---
 

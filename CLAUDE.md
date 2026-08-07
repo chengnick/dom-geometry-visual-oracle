@@ -18,21 +18,27 @@ Playwright 走訪頁面   →  當前 geometry           →  三級判定
 
 ## 檔案地圖
 
-- `ui_layout_checker/config.js` — 選擇器、斷點、樣式屬性、**兩條容差線**（warn / fail）
-- `ui_layout_checker/extract.js` — 共用擷取（boundingBox + computed style + `visible`）
+- `ui_layout_checker/config.js` — **站點 registry `SITES`**、斷點、樣式屬性、**兩條容差線**（warn / fail）
+- `ui_layout_checker/extract.js` — 共用擷取 `extractLayout(page, selectors)`（boundingBox + computed style + `visible`）
 - `ui_layout_checker/diff.js` — **純比對邏輯**（不開瀏覽器、不讀檔）：`diffSelector` + 三級判定 `classifyDiffs`
-- `ui_layout_checker/capture.js` — 產生/更新 baseline（**須帶 `--update-baseline`**）
-- `ui_layout_checker/compare.js` — 走訪 → 比對 → 判定 → 印報告 + `report.json`
-- `baselines/huiyou/{mobile,tablet,desktop}.json` — 版控的 baseline（`{ meta, elements }`）
+- `ui_layout_checker/capture.js` — 產生/更新 baseline（**須帶 `--update-baseline`**，可 `--site=`）
+- `ui_layout_checker/compare.js` — 走訪 → 比對 → 判定 → 印報告 + `report.json`（可 `--site=`）
+- `baselines/<site>/{mobile,tablet,desktop}.json` — 版控的 baseline（`{ meta, elements }`）
 - `tests/diff.spec.js` — diff.js 純邏輯的 26 個單元測試
 - `.github/workflows/ui-layout-check.yml` — PR 觸發的 oracle
+
+## 接一個新受測站
+
+在 `config.js` 的 `SITES` 加一筆 `{ name, url, selectors }`（`url` 可 `file://` 或 `http://` dev server），
+然後 `npm run layout:update -- --site=<name>` 產 baseline、commit。擷取/比對/CI 自動涵蓋。
 
 ## 常用指令
 
 ```bash
 npm run test:unit       # diff.js 純邏輯單元測試（最快，不開瀏覽器）
-npm run layout:compare  # 比對版面，印三級報告，fail → exit 1
-npm run layout:update   # 重抓 baseline（= capture.js --update-baseline）
+npm run layout:compare  # 比對所有站點版面，印三級報告，fail → exit 1
+npm run layout:update   # 重抓所有站點 baseline（= capture.js --update-baseline）
+# 單站：加 --site=<name>（compare 直接加；update 用 -- --site=<name>）
 ```
 
 ## 改動時的規矩

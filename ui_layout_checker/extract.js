@@ -1,15 +1,17 @@
 // @ts-check
-const { SELECTORS, STYLE_PROPS } = require('./config');
+const { STYLE_PROPS } = require('./config');
 
 /**
  * 對每個選定的元素抓 boundingBox（幾何）+ 指定的 computed style（樣式），
  * 回傳 { selector: { x, y, width, height, ...styleProps } } 的扁平物件。
  * 抓不到的元素（例如選擇器打錯或元素不存在）記錄 found:false，不讓整個流程中斷。
+ * @param {import('@playwright/test').Page} page
+ * @param {string[]} selectors 該站要監看的選擇器
  */
-async function extractLayout(page) {
+async function extractLayout(page, selectors) {
   const result = {};
 
-  for (const selector of SELECTORS) {
+  for (const selector of selectors) {
     const locator = page.locator(selector).first();
     const count = await locator.count();
 

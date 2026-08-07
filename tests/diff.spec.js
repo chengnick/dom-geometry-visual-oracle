@@ -1,8 +1,18 @@
 // @ts-check
 // ui_layout_checker 純比對邏輯的單元測試（不開瀏覽器、不讀檔）。
 const { test, expect } = require('@playwright/test');
-const { geometryTolerance, diffSelector } = require('../ui_layout_checker/diff');
-const { GEOMETRY_TOLERANCE, FONT_SIZE_TOLERANCE_PX } = require('../ui_layout_checker/config');
+const {
+  geometryTolerance,
+  geometryFailTolerance,
+  diffSelector,
+  severityOfDiff,
+  classifyDiffs,
+} = require('../ui_layout_checker/diff');
+const {
+  GEOMETRY_TOLERANCE,
+  GEOMETRY_FAIL_TOLERANCE,
+  FONT_SIZE_TOLERANCE_PX,
+} = require('../ui_layout_checker/config');
 
 // 建立一個「完整、無差異」的基準元素，測試時只覆寫要驗證的欄位
 function makeEl(overrides = {}) {
@@ -113,6 +123,74 @@ test.describe('diffSelector() — 樣式差異', () => {
     const diffs = diffSelector(makeEl(), makeEl({ height: 120, fontSize: '24px', color: 'rgb(1, 2, 3)' }));
     const fields = diffs.map(d => d.field).sort();
     expect(fields).toEqual(['color', 'fontSize', 'height']);
+  });
+
+});
+
+test.describe('三級判定 — severityOfDiff / classifyDiffs', () => {
+
+  // width=300：warn 線 = 0.01*300 = 3px；fail 線 = 0.05*300 = 15px
+  test('位移落在 warn 線與 fail 線之間 → warn', () => {
+    // 位移 10px：> 3（會被 diffSelector 回報）但 <= 15（未達 fail）
+    const [diff] = diffSelector(makeEl(), makeEl({ width: 310 }));
+    expect(severityOfDiff(diff)).toBe('warn');
+  });
+
+  test('位移超過 fail 線 → fail', () => {
+    // 位移 20px：> 15
+    const [diff] = diffSelector(makeEl(), makeEl({ width: 320 }));
+    expect(severityOfDiff(diff)).toBe('fail');
+  });
+
+  test('位移剛好等於 fail 線 → 仍算 warn（用 > 而非 >=）', () => {
+    // fail 線 = 15px；位移剛好 15px 不算越線
+    const [diff] = diffSelector(makeEl(), makeEl({ width: 315 }));
+    expect(severityOfDiff(diff)).toBe('warn');
+  });
+
+  test('found 翻轉（元素消失）→ 一律 fail，不進 warn 帶', () => {
+    const [diff] = diffSelector(makeEl(), { found: false });
+    expect(severityOfDiff(diff)).toBe('fail');
+  });
+
+  test('visible 翻轉（display:none）→ 一律 fail', () => {
+    const [diff] = diffSelector(makeEl({ visible: true }), makeEl({ visible: false }));
+    expect(diff.field).toBe('visible');
+    expect(severityOfDiff(diff)).toBe('fail');
+  });
+
+  test('樣式改變（顏色）→ 一律 fail', () => {
+    const [diff] = diffSelector(makeEl(), makeEl({ color: 'rgb(204, 51, 0)' }));
+    expect(severityOfDiff(diff)).toBe('fail');
+  });
+
+  test('斷點覆寫可放寬 fail 門檻：同樣 20px 位移改判 warn', () => {
+    const [diff] = diffSelector(makeEl(), makeEl({ width: 320 }));
+    // 放寬 fail 線到 ratio 0.1（=30px），20px 位移就從 fail 降為 warn
+    expect(severityOfDiff(diff, { minPx: 8, ratio: 0.1 })).toBe('warn');
+  });
+
+  test('classifyDiffs 整體判定：有 fail → fail（fail 蓋過 warn）', () => {
+    const diffs = diffSelector(makeEl(), makeEl({ width: 310, color: 'rgb(1, 2, 3)' }));
+    const { verdict, graded } = classifyDiffs(diffs);
+    expect(verdict).toBe('fail');
+    expect(graded.map(d => d.severity).sort()).toEqual(['fail', 'warn']);
+  });
+
+  test('classifyDiffs 整體判定：只有 warn → warn', () => {
+    const diffs = diffSelector(makeEl(), makeEl({ width: 310 }));
+    expect(classifyDiffs(diffs).verdict).toBe('warn');
+  });
+
+  test('classifyDiffs 整體判定：無差異 → pass', () => {
+    expect(classifyDiffs([]).verdict).toBe('pass');
+  });
+
+  test('fail 容差公式：取絕對下限與相對百分比的較大值', () => {
+    // 小元素：0.05*50 = 2.5 < minPx(8) → 取 8
+    expect(geometryFailTolerance(50)).toBe(GEOMETRY_FAIL_TOLERANCE.minPx);
+    // 大元素：0.05*1000 = 50 > 8 → 取 50
+    expect(geometryFailTolerance(1000)).toBe(GEOMETRY_FAIL_TOLERANCE.ratio * 1000);
   });
 
 });

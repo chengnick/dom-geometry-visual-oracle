@@ -18,6 +18,9 @@ async function extractLayout(page) {
       continue;
     }
 
+    // found = 選擇器抓得到（在 DOM 裡）；visible = 真的顯示出來（非 display:none / visibility:hidden）
+    // 兩者分開：元素還在 DOM 但被隱藏，是最常見的版面壞法，found 抓不到、visible 抓得到。
+    const visible = await locator.isVisible();
     const box = await locator.boundingBox();
     const style = await locator.evaluate((el, props) => {
       const computed = getComputedStyle(el);
@@ -28,6 +31,7 @@ async function extractLayout(page) {
 
     result[selector] = {
       found: true,
+      visible,
       x: box ? round(box.x) : null,
       y: box ? round(box.y) : null,
       width: box ? round(box.width) : null,

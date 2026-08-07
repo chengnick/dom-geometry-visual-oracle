@@ -1,0 +1,146 @@
+{
+  "meta": {
+    "site": "huiyou",
+    "breakpoint": "mobile",
+    "viewport": {
+      "width": 375,
+      "height": 812
+    },
+    "commit": "556902d",
+    "capturedAt": "2026-08-07T14:16:37.255Z"
+  },
+  "elements": {
+    ".nav": {
+      "found": true,
+      "visible": true,
+      "x": 0,
+      "y": 0,
+      "width": 375,
+      "height": 170.58,
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "color": "rgb(51, 46, 34)",
+      "backgroundColor": "rgba(247, 243, 228, 0.9)"
+    },
+    ".logo": {
+      "found": true,
+      "visible": true,
+      "x": 112.39,
+      "y": 36,
+      "width": 150.2,
+      "height": 40.8,
+      "fontSize": "24px",
+      "fontWeight": "700",
+      "color": "rgb(75, 93, 58)",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    ".hero h1": {
+      "found": true,
+      "visible": true,
+      "x": 20,
+      "y": 266.17,
+      "width": 335,
+      "height": 43.19,
+      "fontSize": "36px",
+      "fontWeight": "500",
+      "color": "rgb(43, 53, 32)",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    ".hero-img": {
+      "found": true,
+      "visible": true,
+      "x": 20,
+      "y": 470.11,
+      "width": 335,
+      "height": 186.97,
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "color": "rgb(51, 46, 34)",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    "#story .swatch": {
+      "found": true,
+      "visible": true,
+      "x": 20,
+      "y": 737.08,
+      "width": 335,
+      "height": 260,
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "color": "rgb(51, 46, 34)",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    "#ingredients .ing-card:nth-child(1)": {
+      "found": true,
+      "visible": true,
+      "x": 20,
+      "y": 1478.19,
+      "width": 335,
+      "height": 161.78,
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "color": "rgb(51, 46, 34)",
+      "backgroundColor": "rgb(255, 255, 255)"
+    },
+    "#sustain .swatch": {
+      "found": true,
+      "visible": true,
+      "x": 20,
+      "y": 2681.84,
+      "width": 335,
+      "height": 260,
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "color": "rgb(51, 46, 34)",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    ".prod-tabs": {
+      "found": true,
+      "visible": true,
+      "x": 20,
+      "y": 3174.83,
+      "width": 335,
+      "height": 100.78,
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "color": "rgb(51, 46, 34)",
+      "backgroundColor": "rgba(0, 0, 0, 0)"
+    },
+    ".prod-card:nth-child(1)": {
+      "found": true,
+      "visible": true,
+      "x": 20,
+      "y": 3299.61,
+      "width": 335,
+      "height": 410.38,
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "color": "rgb(51, 46, 34)",
+      "backgroundColor": "rgb(255, 255, 255)"
+    },
+    ".contact-container": {
+      "found": true,
+      "visible": true,
+      "x": 20,
+      "y": 6174.03,
+      "width": 335,
+      "height": 381.56,
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "color": "rgb(51, 46, 34)",
+      "backgroundColor": "rgb(255, 255, 255)"
+    },
+    "footer": {
+      "found": true,
+      "visible": true,
+      "x": 0,
+      "y": 6619.59,
+      "width": 375,
+      "height": 99,
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "color": "rgb(122, 107, 74)",
+      "backgroundColor": "rgb(247, 243, 228)"
+    }
+  }
+}

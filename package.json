@@ -1,7 +1,7 @@
 {
-  "name": "gemini",
+  "name": "ui-layout-oracle",
   "version": "1.0.0",
-  "description": "- `index.html` — 網站主頁（單頁滾動：品牌故事 / 成分溯源 / 薈柚堅持） - `styles.css` — 引入 tokens/ 內所有樣式與字體 - `tokens/` — 顏色、字體、間距、陰影變數 - `assets/` — 圖片素材",
+  "description": "跑在 CI 裡的單站視覺回歸 oracle：比對 DOM geometry baseline，判斷每個 PR 版面有沒有壞。不靠 pixel-diff、不存截圖。",
   "main": "index.js",
   "directories": {
     "test": "test"

@@ -8,8 +8,10 @@ const { chromium } = require('@playwright/test');
 const { SITES, breakpointsFor, baselineDir } = require('./config');
 const { extractLayout } = require('./extract');
 const { diffSelector, classifyDiffs } = require('./diff');
+const { writeReportHtml } = require('./report-html');
 
 const REPORT_PATH = path.resolve(__dirname, 'report.json');
+const REPORT_HTML_PATH = path.resolve(__dirname, 'report.html');
 const ICON = { fail: '✗', warn: '△', pass: '✓' };
 
 function siteFilter() {
@@ -72,7 +74,7 @@ async function main() {
         bpVerdict = worse(bpVerdict, verdict);
       }
 
-      siteReport.breakpoints.push({ name: bp.name, verdict: bpVerdict, findings });
+      siteReport.breakpoints.push({ name: bp.name, viewport: { width: bp.width, height: bp.height }, verdict: bpVerdict, findings });
       siteReport.verdict = worse(siteReport.verdict, bpVerdict);
 
       console.log(`  ${ICON[bpVerdict]} [${bp.name}] ${bp.width}×${bp.height} — ${bpVerdict.toUpperCase()}`);
@@ -89,9 +91,11 @@ async function main() {
 
   await browser.close();
   fs.writeFileSync(REPORT_PATH, JSON.stringify(report, null, 2) + '\n');
+  writeReportHtml(report, REPORT_HTML_PATH);
 
   console.log(`\n──────── 總判定：${report.overall.toUpperCase()} ────────`);
   console.log(`報告已寫入 ${path.relative(process.cwd(), REPORT_PATH)}`);
+  console.log(`HTML 報告 ${path.relative(process.cwd(), REPORT_HTML_PATH)}（用瀏覽器打開，或 npm run layout:report）`);
   process.exit(report.overall === 'fail' ? 1 : 0);
 }
 

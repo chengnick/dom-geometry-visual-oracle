@@ -9,3 +9,4 @@ node_modules/
 
 # ui_layout_checker 每次比對產生的報告（baseline 本身要版控，報告不用）
 ui_layout_checker/report.json
+ui_layout_checker/report.html

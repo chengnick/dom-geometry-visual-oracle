@@ -22,7 +22,8 @@ Playwright 走訪頁面   →  當前 geometry           →  三級判定
 - `ui_layout_checker/extract.js` — 共用擷取 `extractLayout(page, selectors)`（boundingBox + computed style + `visible`）
 - `ui_layout_checker/diff.js` — **純比對邏輯**（不開瀏覽器、不讀檔）：`diffSelector` + 三級判定 `classifyDiffs`
 - `ui_layout_checker/capture.js` — 產生/更新 baseline（**須帶 `--update-baseline`**，可 `--site=`）
-- `ui_layout_checker/compare.js` — 走訪 → 比對 → 判定 → 印報告 + `report.json`（可 `--site=`）
+- `ui_layout_checker/compare.js` — 走訪 → 比對 → 判定 → 印報告 + `report.json` + `report.html`（可 `--site=`）
+- `ui_layout_checker/report-html.js` — 把 `report.json` 渲染成自包含 HTML 報告（compare 自動呼叫，也可 `--open` 獨立跑）
 - `baselines/<site>/{mobile,tablet,desktop}.json` — 版控的 baseline（`{ meta, elements }`）
 - `tests/diff.spec.js` — diff.js 純邏輯的 26 個單元測試
 - `.github/workflows/ui-layout-check.yml` — PR 觸發的 oracle
@@ -36,7 +37,8 @@ Playwright 走訪頁面   →  當前 geometry           →  三級判定
 
 ```bash
 npm run test:unit       # diff.js 純邏輯單元測試（最快，不開瀏覽器）
-npm run layout:compare  # 比對所有站點版面，印三級報告，fail → exit 1
+npm run layout:compare  # 比對所有站點版面，印三級報告 + 產 report.json/report.html，fail → exit 1
+npm run layout:report   # 把上次比對結果轉 HTML 報告並打開
 npm run layout:update   # 重抓所有站點 baseline（= capture.js --update-baseline）
 # 單站：加 --site=<name>（compare 直接加；update 用 -- --site=<name>）
 ```

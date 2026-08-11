@@ -98,6 +98,8 @@
 ### ③ 掛進 CI
 `.github/workflows/ui-layout-check.yml` 在 PR 觸發：`npm ci` → 單元測試 → `layout:compare`。總判定 fail 時 job 紅燈；`report.json` 上傳為 artifact，並把分級摘要貼成 PR comment（同一條更新不洗版）。
 
+每次 `layout:compare` 除了終端機報告與 `report.json`，也會產出一份自包含的 **HTML 報告** `report.html`（三色分級、逐元素位移），直接用瀏覽器打開即可；`npm run layout:report` 會用上次的 `report.json` 重新產生並自動打開。
+
 ---
 
 ## 指令
@@ -108,6 +110,7 @@ npm install                 # 首次執行前（含 npx playwright install）
 npm run test:unit           # diff.js 純邏輯單元測試（不開瀏覽器，最快）
 npm run test:visual         # 視覺回歸（三引擎截圖比對）
 npm run layout:compare      # oracle：擷取所有站點三斷點 → 比對 → 三級判定報告，fail 時 exit 1
+npm run layout:report       # 把上次比對結果轉成 HTML 報告並用瀏覽器打開
 npm run layout:update       # 重抓所有站點 baseline（= capture.js --update-baseline）
 
 # 只跑單一站點（比對 / 更新）

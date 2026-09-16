@@ -1,14 +1,15 @@
 // @ts-check
 const { test, expect } = require('@playwright/test');
+const path = require('path');
 
-// 設定測試的目標預覽網址
-const TARGET_URL = 'https://example.com';
+// 測本機靜態檔案，讓 portfolio demo 不依賴外部部署或網路狀態。
+const LOCAL_URL = 'file://' + path.resolve(__dirname, '..', 'index.html');
 
 test.describe('薈柚 Huì Yòu — Phase 1 煙霧測試', () => {
 
     // 每次測試前先導覽至目標網頁
     test.beforeEach(async ({ page }) => {
-        await page.goto(TARGET_URL);
+        await page.goto(LOCAL_URL);
     });
 
     test('1. 網頁應載入成功且包含正確的 SEO Meta 資訊', async ({ page }) => {
@@ -96,7 +97,7 @@ test.describe('薈柚 Huì Yòu — 手機版行動裝置相容性檢測', () =>
     test.use({ viewport: { width: 375, height: 667 } });
 
     test('6. 在 375px 寬度下，網頁應完美響應不破版', async ({ page }) => {
-        await page.goto(TARGET_URL);
+        await page.goto(LOCAL_URL);
 
         // 檢查 Navbar 在手機版是否正常顯示
         const logo = page.locator('.nav .logo');
@@ -114,3 +115,4 @@ test.describe('薈柚 Huì Yòu — 手機版行動裝置相容性檢測', () =>
     });
 
 });
+

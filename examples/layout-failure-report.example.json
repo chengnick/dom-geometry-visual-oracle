@@ -1,0 +1,130 @@
+{
+  "generatedAt": "2026-09-13T00:00:00.000Z",
+  "overall": "fail",
+  "sites": [
+    {
+      "name": "huiyou",
+      "verdict": "fail",
+      "breakpoints": [
+        {
+          "name": "mobile",
+          "viewport": {
+            "width": 375,
+            "height": 812
+          },
+          "verdict": "fail",
+          "findings": [
+            {
+              "selector": ".logo",
+              "verdict": "fail",
+              "diffs": [
+                {
+                  "field": "fontSize",
+                  "from": "24px",
+                  "to": "40px",
+                  "severity": "fail"
+                },
+                {
+                  "field": "height",
+                  "from": 29,
+                  "to": 48,
+                  "delta": 19,
+                  "tolerance": 8,
+                  "severity": "fail"
+                }
+              ]
+            },
+            {
+              "selector": ".hero h1",
+              "verdict": "fail",
+              "diffs": [
+                {
+                  "field": "y",
+                  "from": 258.7,
+                  "to": 285.9,
+                  "delta": 27.2,
+                  "tolerance": 8,
+                  "severity": "fail"
+                }
+              ]
+            },
+            {
+              "selector": "#story .swatch",
+              "verdict": "warn",
+              "diffs": [
+                {
+                  "field": "y",
+                  "from": 915.4,
+                  "to": 942.6,
+                  "delta": 27.2,
+                  "tolerance": 31.5,
+                  "severity": "warn"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "tablet",
+          "viewport": {
+            "width": 768,
+            "height": 1024
+          },
+          "verdict": "fail",
+          "findings": [
+            {
+              "selector": ".logo",
+              "verdict": "fail",
+              "diffs": [
+                {
+                  "field": "fontSize",
+                  "from": "24px",
+                  "to": "40px",
+                  "severity": "fail"
+                }
+              ]
+            },
+            {
+              "selector": ".hero-img",
+              "verdict": "warn",
+              "diffs": [
+                {
+                  "field": "y",
+                  "from": 214.3,
+                  "to": 224.1,
+                  "delta": 9.8,
+                  "tolerance": 18.2,
+                  "severity": "warn"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "desktop",
+          "viewport": {
+            "width": 1280,
+            "height": 800
+          },
+          "verdict": "warn",
+          "findings": [
+            {
+              "selector": ".prod-card:nth-child(1)",
+              "verdict": "warn",
+              "diffs": [
+                {
+                  "field": "width",
+                  "from": 276,
+                  "to": 286,
+                  "delta": 10,
+                  "tolerance": 13.8,
+                  "severity": "warn"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

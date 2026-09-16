@@ -5,9 +5,7 @@
     "viewport": {
       "width": 375,
       "height": 812
-    },
-    "commit": "d957e73",
-    "capturedAt": "2026-08-07T14:34:40.081Z"
+    }
   },
   "elements": {
     ".nav": {

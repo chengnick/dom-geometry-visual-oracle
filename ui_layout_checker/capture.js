@@ -4,18 +4,9 @@
 // 可選 --site=<name> 只更新單一站點。
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 const { chromium } = require('@playwright/test');
 const { SITES, breakpointsFor, baselineDir } = require('./config');
 const { extractLayout } = require('./extract');
-
-function currentCommit() {
-  try {
-    return execSync('git rev-parse --short HEAD', { encoding: 'utf-8' }).trim();
-  } catch {
-    return null; // 尚未 commit / 非 git 環境時不擋流程
-  }
-}
 
 function siteFilter() {
   const arg = process.argv.find((a) => a.startsWith('--site='));
@@ -40,7 +31,6 @@ async function main() {
     process.exit(1);
   }
 
-  const commit = currentCommit();
   const browser = await chromium.launch();
 
   for (const site of sites) {
@@ -59,8 +49,6 @@ async function main() {
           site: site.name,
           breakpoint: bp.name,
           viewport: { width: bp.width, height: bp.height },
-          commit,
-          capturedAt: new Date().toISOString(),
         },
         elements,
       };
@@ -75,7 +63,8 @@ async function main() {
   }
 
   await browser.close();
-  console.log(`\n基準已更新（commit ${commit || 'N/A'}）。記得把 baselines/ 一起 commit。`);
+  console.log('\n基準已更新。請確認 diff 只包含預期的 layout baseline 變更，再把 baselines/ 一起 commit。');
 }
 
 main();
+

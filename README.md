@@ -1,137 +1,278 @@
-# UI_Test — 跑在 CI 裡的單站視覺回歸 Oracle
+# UI_Test - UI Layout Regression Oracle
 
-> 用 DOM geometry 當 baseline、跑在 CI 裡的單站視覺回歸 oracle：每個 PR 自動判斷版面有沒有壞，**不靠 pixel-diff、不存截圖**。
+> A Playwright-based UI regression demo that compares DOM geometry baselines instead of relying only on screenshot pixel diffs. It is designed as a portfolio project for Software Test Engineer / SDET interviews.
 
-以「薈柚 Huì Yòu」品牌手工皂靜態網站為受測對象，示範一套**分層的 UI 測試策略**，並在撞到業界標準工具（截圖式視覺回歸）的限制後，自行設計了更適合 CI 的替代方案，最後連自製工具本身都補上單元測試。
+This project uses a static product website, "Hui You", as the test target. The goal is not to claim this tool replaces visual testing. The goal is to show how a QA engineer can turn a UI regression problem into a repeatable, explainable, CI-friendly check.
 
-**核心敘事：先用現成工具撞到痛點 → 自己做一個更合適的工具解掉它 → 連自製工具都補上單元測試 → 掛進 CI 變成 PR 的守門員。**
+## Project Background
 
----
+UI regression testing often starts with screenshots. Screenshot comparison is useful, but it can become noisy when the page has responsive layouts, font rendering differences, image compression changes, or small anti-aliasing shifts.
 
-## 架構一圖
+In this project I first used Playwright's built-in screenshot assertions to test a real-looking landing page. That exposed a practical QA problem:
 
-```
-   擷取 Capture              比對 Diff                 判定 Verdict
-┌──────────────────┐    ┌────────────────────┐    ┌──────────────────┐
-│ Playwright 走訪   │    │ 當前 geometry       │    │ 三級判定          │
-│ 三個斷點          │ →  │   vs                │ →  │ pass / warn / fail│
-│ 匯出 DOM geometry │    │ baseline geometry   │    │ fail → exit 1     │
-│ (含 visible/樣式) │    │ (逐選擇器逐欄位)     │    │ → CI 紅燈         │
-└──────────────────┘    └────────────────────┘    └──────────────────┘
-        │                                                    │
-        └──── baselines/<site>/{mobile,tablet,desktop}.json ─┘
-              版控、量小（KB 級）、更新須明確 --update-baseline
-```
+- full-page and component screenshots are easy to understand, but baseline images grow quickly;
+- pixel diffs show where pixels changed, but not always why they changed;
+- a small rendering difference can look dramatic in a diff image;
+- CI needs a result that can be reviewed quickly without opening many image artifacts.
 
----
+So I built a small layout oracle as a second layer. Instead of comparing pixels, it captures selected DOM elements and compares their geometry and key computed styles against a baseline.
 
-## UI 測試的三個層次（別混為一談）
+## QA Problem Solved
 
-| 層次 | 問的問題 | 本專案的實作 | 工具 |
-|---|---|---|---|
-| **1. 功能性 E2E** | 點得到、走得通嗎？ | `tests/smoke.spec.js` | Playwright |
-| **2. 視覺回歸** | 畫面長得跟基準一樣嗎？ | `tests/visual.spec.js` | Playwright `toHaveScreenshot()` |
-| **3. 版面幾何驗證** | 元素的座標/尺寸/樣式跑掉了嗎？ | `ui_layout_checker/` | 自製 oracle（抓 DOM 幾何存 JSON） |
+This project focuses on one specific question:
 
----
+> Did an important UI element move, resize, disappear, become hidden, or change key style in a way that should block a pull request?
 
-## Step 1 — 視覺回歸（用內建工具，並撞到它的極限）
+It is aimed at layout regressions such as:
 
-`tests/visual.spec.js` 用 Playwright 內建的 `toHaveScreenshot()`，對首頁全頁 / Navbar / Hero / 商品區塊四個區塊截圖比對，跨 chromium + firefox + webkit 三個引擎，共 12 個測試。
+- a header height change pushing the hero section down;
+- a product card becoming wider or narrower than expected;
+- a responsive breakpoint causing unexpected layout shift;
+- a key CTA, card, section, or footer disappearing;
+- a style change such as font size or color changing on a watched selector.
 
-**撞到的痛點（正是 Step 2 的動機）**：
-- **儲存成本高**：3 引擎 × 4 區塊的基準圖就達 **6.3 MB**，單張全頁截圖 1.3~1.5 MB。多頁面／多斷點下會線性爆炸。
-- **容差難調**：全頁快照因 CSS 背景圖與字型渲染，需加 `maxDiffPixelRatio` 才穩定；小區塊反而不需要。同一套容差不適用所有區塊。
-- **只知道「哪裡不一樣」，不知道「為什麼」**：diff 圖只標紅像素，不會告訴你根因是字級變了還是元素被推移。
+It is not meant to validate every pixel. Screenshot testing and manual review are still useful for image quality, spacing taste, design polish, accessibility, and visual issues that do not change bounding boxes.
 
----
+## Technical Approach
 
-## Step 2 — 自製 `ui_layout_checker`（解掉 Step 1 的痛點）
+The project has three layers of UI testing:
 
-**核心概念**：不存截圖、不比像素，改抓每個關鍵元素的 `boundingBox()`（x/y/width/height）+ `visible` + 關鍵 computed style（字級/字重/顏色/背景色），存成結構化 JSON 當基準，下次重抓比對。
-
-| | Step 1 截圖 | Step 2 JSON |
+| Layer | Purpose | Implementation |
 |---|---|---|
-| 體積 | 6.3 MB | **KB 級**（小三個數量級） |
-| 比什麼 | 像素 | 版面結構 + 樣式 |
-| 對字型渲染差異 | 敏感、易誤報 | 只受容差內波動影響 |
-| 回報內容 | 一塊紅色像素 | 具體欄位：`fontSize 24px→40px`、`y 位移 27.2px` |
+| Functional smoke tests | Check that the page loads and core flows work | `tests/smoke.spec.js` |
+| Screenshot visual checks | Compare selected page areas with screenshots | `tests/visual.spec.js` |
+| Layout oracle | Compare DOM geometry and selected styles | `ui_layout_checker/` |
 
-**容差公式（設計精華）**：`max(絕對下限, 相對百分比 × 元素自身基準尺寸)`
-- 絕對下限吸收次像素渲染雜訊，小元素不誤報
-- 相對百分比讓容差隨元素尺寸縮放，大區塊本來就有更多正常浮動
+The layout oracle works like this:
 
----
+```text
+Playwright opens the page
+  -> capture selected DOM elements at mobile / tablet / desktop widths
+  -> store baseline JSON in baselines/<site>/<breakpoint>.json
+  -> compare current capture with the baseline
+  -> classify each difference as pass / warn / fail
+  -> write ui_layout_checker/report.json and report.html
+  -> return exit code 1 when the overall result is fail
+```
 
-## Step 3 — 為自製工具補單元測試（測試工具自己也要有測試）
+The watched data includes:
 
-`tests/diff.spec.js` 針對 `diff.js` 的純函數寫了 **26 個單元測試**，涵蓋容差公式邊界、found/visible 狀態、幾何容差邊界、樣式差異、以及三級判定分類。
+- element presence: `found`
+- visibility: `visible`
+- geometry: `x`, `y`, `width`, `height`
+- selected computed styles: `fontSize`, `fontWeight`, `color`, `backgroundColor`
 
-**兩個刻意的設計決策**：
-1. **為可測試性重構**：把純邏輯抽到獨立的 `diff.js`（不含 `launch browser` 副作用），需求反過來逼出更乾淨的架構（純函數與副作用分離）。
-2. **變異測試驗證**：把比對邏輯的 `>` 故意改成 `>=`，確認**正好只有那條邊界測試失敗**，證明測試真的守得住邊界。
+The important design choice is the tolerance model:
 
----
+```text
+tolerance = max(minimum pixels, element size * percentage)
+```
 
-## Step 4 — 從 checker 升級成 CI Oracle（本次重點）
+This avoids failing a build for sub-pixel noise, while still catching meaningful movement. The checker uses two thresholds:
 
-把「能在本地跑的 checker」變成「跑在 PR 上的守門員」，做了三件事：
-
-### ① 多斷點 × 多站點擷取
-三個斷點各存一份 baseline：`mobile (375)` / `tablet (768)` / `desktop (1280)`。單頁滾動站在不同寬度會 reflow，製造測試表面積，也讓 RWD 壞掉時的位移抓得到。baseline 結構為 `{ meta, elements }`，`meta` 記錄 commit sha、viewport、擷取時間。
-
-站點寫成 **registry**（`config.js` 的 `SITES`）：每個站點 = `{ name, url, selectors }`，baseline 落在 `baselines/<site>/`。**接一個新站只要在 registry 加一筆**（url 可以是 `file://` 靜態檔或 `http://` dev server），擷取/比對/CI 全部自動涵蓋——這正是「單站 baseline 不會爆」定位下、仍能水平擴充到多站的設計。`--site=<name>` 可只跑單一站點。
-
-### ② 三級判定（避免 sub-pixel 抖動就 fail）
-兩條容差線，把差異分三級：
-
-| 判定 | 條件 | 動作 |
+| Verdict | Meaning | CI behavior |
 |---|---|---|
-| **Fail** | 幾何位移 > fail 線（預設 8px 或 5%）／ 元素消失（found 翻轉）／ `visible` 翻轉 ／ 樣式改變 | **擋 PR**（exit 1，CI 紅燈） |
-| **Warn** | 幾何位移落在 warn 線與 fail 線之間（2~8px） | 記錄不擋，人工看一眼 |
-| **Pass** | 幾何位移 < warn 線（2px） | 視為抖動忽略 |
+| `pass` | Differences are within tolerance | Build stays green |
+| `warn` | Difference is worth reviewing but below the fail threshold | Report only |
+| `fail` | Element disappeared, visibility changed, style changed, or geometry exceeded fail tolerance | Build fails |
 
-容差寫在 config，且 fail 線可**各斷點覆寫**（例如手機允許更大位移）。
+The comparison logic is separated into pure functions in `ui_layout_checker/diff.js`, with unit tests in `tests/diff.spec.js`. This is intentional: the test tool itself should have tests, especially around boundary conditions.
 
-> **活實例**：把 `.logo` 字級從 24px 改成 40px，oracle 三斷點全 FAIL——`.logo` 本體（fontSize/width/height）判 fail，nav 變高把整頁往下推 27.2px，於是 `.hero h1`／`.hero-img`（容差緊）判 fail，頁面更下方的 swatch（容差鬆）**同樣 27.2px 位移卻降級為 warn**。同一個物理位移在不同位置得到不同判定，正是相對容差設計的價值。
+## How To Run The Demo
 
-### ③ 掛進 CI
-`.github/workflows/ui-layout-check.yml` 在 PR 觸發：`npm ci` → 單元測試 → `layout:compare`。總判定 fail 時 job 紅燈；`report.json` 上傳為 artifact，並把分級摘要貼成 PR comment（同一條更新不洗版）。
-
-每次 `layout:compare` 除了終端機報告與 `report.json`，也會產出一份自包含的 **HTML 報告** `report.html`（三色分級、逐元素位移），直接用瀏覽器打開即可；`npm run layout:report` 會用上次的 `report.json` 重新產生並自動打開。
-
----
-
-## 指令
+Install dependencies:
 
 ```bash
-npm install                 # 首次執行前（含 npx playwright install）
-
-npm run test:unit           # diff.js 純邏輯單元測試（不開瀏覽器，最快）
-npm run test:visual         # 視覺回歸（三引擎截圖比對）
-npm run layout:compare      # oracle：擷取所有站點三斷點 → 比對 → 三級判定報告，fail 時 exit 1
-npm run layout:report       # 把上次比對結果轉成 HTML 報告並用瀏覽器打開
-npm run layout:update       # 重抓所有站點 baseline（= capture.js --update-baseline）
-
-# 只跑單一站點（比對 / 更新）
-node ui_layout_checker/compare.js --site=huiyou
-npm run layout:update -- --site=huiyou
-
-npx playwright show-report  # 視覺化截圖比對報告
+npm install
+npx playwright install chromium
 ```
 
-> `layout:update` 會無條件把「當下畫面」存成新基準。務必先肉眼／視覺回歸確認畫面正確再執行，否則會把壞掉的版面存成基準。
+Run the fastest validation, which tests the layout diff logic without opening a browser:
 
----
+```bash
+npm run test:unit
+```
 
-## 已知限制 / 後續
+Run the layout oracle against the included static demo page:
 
-- **跨 OS 字型度量**：DOM geometry 含字型度量，跨作業系統渲染有 px 級差異。目前靠「CI runner 釘 `windows-latest`、對齊 baseline 擷取環境」規避；更 scalable 的做法是把擷取與比對都釘在 Playwright 官方 Linux 容器，讓 dev 與 CI 用同一渲染環境。
-- **抓不到的壞法**：不比像素 → 抓不到 bounding box 不變的視覺壞法（元素重疊、破圖、對比度不足、陰影/圓角跑掉）。字級與顏色因為有抓 computed style，仍在守備範圍內。
-- **第二個受測對象**：架構已是多站點 registry，接新站只要在 `config.js` 的 `SITES` 加一筆。原規劃的 Sticker Studio Pro（Vite+React+TS，動態 UI）尚未接上——接上後 CI 需先啟 Vite dev server，再讓 `url` 指向 `http://localhost:5173`，即可驗證動態 UI 也 hold 得住。
+```bash
+npm run layout:compare
+```
 
----
+Generate and open the HTML report from the last run:
 
-## 一句話總結（履歷用）
+```bash
+npm run layout:report
+```
 
-> 用 DOM geometry 當 baseline、跑在 CI 裡的單站視覺回歸 oracle：發現截圖式視覺回歸在多斷點下會遇到儲存爆炸與渲染誤報，於是改比 DOM 結構化幾何資料（體積小三個數量級、比結構不比像素），設計三級容差判定避免 sub-pixel 誤報，並為比對核心補上單元測試與變異測試驗證，最後掛進 PR CI 當版面守門員。
+Update baselines only after confirming the current page is correct:
+
+```bash
+npm run layout:update
+```
+
+Run the screenshot-based visual checks:
+
+```bash
+npm run test:visual
+```
+
+Run the functional smoke tests:
+
+```bash
+npm run test:smoke
+```
+
+## Test Results
+
+Current sample report:
+
+```json
+{
+  "overall": "pass",
+  "sites": [
+    {
+      "name": "huiyou",
+      "verdict": "pass",
+      "breakpoints": [
+        { "name": "mobile", "viewport": { "width": 375, "height": 812 }, "verdict": "pass", "findings": [] },
+        { "name": "tablet", "viewport": { "width": 768, "height": 1024 }, "verdict": "pass", "findings": [] },
+        { "name": "desktop", "viewport": { "width": 1280, "height": 800 }, "verdict": "pass", "findings": [] }
+      ]
+    }
+  ]
+}
+```
+
+Latest local verification:
+
+| Check | Result | Notes |
+|---|---:|---|
+| `npm run test:unit` | 26 passed | Pure diff logic, Chromium project |
+| `npm run layout:compare` | PASS | 11 watched elements across mobile / tablet / desktop |
+| `npm run test:smoke` | 15 passed, 3 skipped | The skipped cases are the planned `test.fixme` LINE placeholder check across browsers |
+| `npm run test:visual` | 12 passed | Screenshot checks across Chromium / Firefox / WebKit |
+
+The unit test suite covers the diff engine, including:
+
+- geometry tolerance boundaries;
+- found / missing element handling;
+- style differences;
+- warning versus failure classification;
+- breakpoint-specific fail tolerance overrides.
+
+At the time this README was prepared, `tests/diff.spec.js` contains 26 unit tests for the pure layout comparison logic.
+
+## CI Usage
+
+The GitHub Actions workflow is in:
+
+```text
+.github/workflows/ui-layout-check.yml
+```
+
+It runs on pull requests to `main` or `master`, and can also be triggered manually.
+
+The CI flow is:
+
+```text
+checkout
+  -> setup Node.js 20
+  -> npm ci
+  -> install Playwright Chromium
+  -> npm run test:unit
+  -> npm run layout:compare
+  -> upload ui_layout_checker/report.json as an artifact
+  -> comment the pass / warn / fail summary on the PR
+```
+
+The workflow currently uses `windows-latest` because the existing baselines were captured on Windows. DOM geometry can vary slightly across operating systems due to font rendering and layout differences. Keeping capture and comparison on the same runner reduces false failures.
+
+For a larger team, I would move baseline capture and comparison into the same Playwright Docker image so local and CI runs use the same rendering environment.
+
+## Sample Report
+
+`npm run layout:compare` writes:
+
+```text
+ui_layout_checker/report.json
+ui_layout_checker/report.html
+```
+
+`report.json` is the machine-readable artifact for CI. `report.html` is the human-readable report for local review.
+
+A static fail / warn example is included for interview review:
+
+```text
+examples/layout-failure-report.example.md
+examples/layout-failure-report.example.json
+```
+
+A failing or warning item is reported by selector and field. For example, if a logo font change pushes the page down, the report can identify that:
+
+```text
+.logo
+  fontSize: 24px -> 40px
+  width: changed
+  height: changed
+
+.hero h1
+  y: shifted beyond tolerance
+```
+
+This is the main benefit over a pure pixel diff: the report points to the element and property that changed, making triage faster.
+
+## Project Structure
+
+```text
+UI_Test/
+├── index.html
+├── styles.css
+├── tests/
+│   ├── smoke.spec.js
+│   ├── visual.spec.js
+│   └── diff.spec.js
+├── ui_layout_checker/
+│   ├── config.js
+│   ├── capture.js
+│   ├── compare.js
+│   ├── diff.js
+│   ├── extract.js
+│   └── report-html.js
+├── baselines/
+│   └── huiyou/
+│       ├── mobile.json
+│       ├── tablet.json
+│       └── desktop.json
+└── .github/workflows/ui-layout-check.yml
+```
+
+## Limitations
+
+This project is intentionally small and focused. Its limitations are part of the design:
+
+- It does not replace screenshot testing. It can miss issues where the bounding box stays the same but pixels are wrong, such as broken images, shadows, border radius, or subtle visual polish problems.
+- It does not replace accessibility testing. Color contrast, keyboard navigation, semantic HTML, and screen reader behavior need separate checks.
+- It depends on stable selectors. If selectors are brittle, the oracle becomes brittle too.
+- It currently watches one static demo site. The registry supports more sites, but additional targets should be added deliberately.
+- DOM geometry can differ between operating systems and fonts. CI should use a consistent rendering environment.
+- Updating baselines is a review-sensitive action. A bad UI can be accidentally accepted as the new baseline if the reviewer does not check it first.
+
+## Future Improvements
+
+Planned improvements I would make next:
+
+- Add an accessibility layer with Playwright + axe checks.
+- Add a second demo target, such as a small React/Vite app, to show the oracle works beyond one static page.
+- Run capture and comparison in a fixed Playwright container instead of relying on `windows-latest`.
+- Add a small intentionally-broken fixture page to demonstrate fail and warn reports reproducibly.
+- Improve the HTML report with grouped summaries, before/current values, and links to selectors.
+- Add baseline review guidance to the pull request template.
+- Add an optional screenshot attachment for failed selectors, while keeping DOM geometry as the primary signal.
+
+## Interview Summary
+
+I built this project to demonstrate a practical SDET approach to UI regression testing: start with standard Playwright visual checks, identify where screenshot diffs become noisy or hard to triage, then add a small deterministic oracle that compares DOM geometry and key styles. The result is not a universal visual testing replacement, but it is a CI-friendly guardrail that gives more explainable failure reports for layout regressions.
+
+
+

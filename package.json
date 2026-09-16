@@ -11,11 +11,12 @@
     "test:unit": "playwright test tests/diff.spec.js --project=chromium",
     "layout:update": "node ui_layout_checker/capture.js --update-baseline",
     "layout:compare": "node ui_layout_checker/compare.js",
-    "layout:report": "node ui_layout_checker/report-html.js --open"
+    "layout:report": "node ui_layout_checker/report-html.js --open",
+    "test:smoke": "playwright test tests/smoke.spec.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Nick Cheng",
+  "license": "MIT",
   "type": "commonjs",
   "devDependencies": {
     "@playwright/test": "^1.61.1",

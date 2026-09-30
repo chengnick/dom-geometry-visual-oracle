@@ -1,5 +1,7 @@
 # UI_Test - UI Layout Regression Oracle
 
+[![UI Layout Oracle](https://github.com/chengnick/dom-geometry-visual-oracle/actions/workflows/ui-layout-check.yml/badge.svg)](https://github.com/chengnick/dom-geometry-visual-oracle/actions/workflows/ui-layout-check.yml)
+
 > A Playwright-based UI regression demo that compares DOM geometry baselines instead of relying only on screenshot pixel diffs. It is designed as a portfolio project for Software Test Engineer / SDET interviews.
 
 This project uses a static product website, "Hui You", as the test target. The goal is not to claim this tool replaces visual testing. The goal is to show how a QA engineer can turn a UI regression problem into a repeatable, explainable, CI-friendly check.

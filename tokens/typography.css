@@ -1,52 +1,23 @@
 /* 薈柚 Huì Yòu — Typography tokens
    Headings: Noto Serif TC (serif, gentle/poetic, matches moodboard wordmark)
    Body/UI:  Noto Sans TC (clean, legible at small sizes)
-   Loaded via Google Fonts CDN — see readme.md "Fonts" note: binaries could not be
-   downloaded into this project by the authoring tool, so @font-face below points
-   at Google's hosted static files directly (not the auto-generated CSS2 API, so the
-   URLs are stable). This IS the real intended typeface, not a substitution. */
+   Self-hosted in assets/fonts/ as variable woff2, subset to the glyphs index.html uses
+   (SIL OFL, see assets/fonts/OFL.txt). Self-hosting keeps text metrics identical on every
+   machine, which the DOM geometry baselines depend on. Re-run pyftsubset if page copy changes. */
 
 @font-face {
   font-family: 'Noto Serif TC';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 200 900;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/notoseriftc/v22/XLYgIZb5bJNDXfx4hh42tX8AtQ.otf) format('opentype');
-}
-@font-face {
-  font-family: 'Noto Serif TC';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/notoseriftc/v22/XLY_IZb5bJNDXfx4hh42tW3rW9lMVQ.otf) format('opentype');
-}
-@font-face {
-  font-family: 'Noto Serif TC';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/notoseriftc/v22/XLY_IZb5bJNDXfx4hh42tWfmW9lMVQ.otf) format('opentype');
+  src: url(../assets/fonts/NotoSerifTC-subset.woff2) format('woff2');
 }
 @font-face {
   font-family: 'Noto Sans TC';
   font-style: normal;
-  font-weight: 400;
+  font-weight: 100 900;
   font-display: swap;
-  src: url(https://fonts.gstatic.com/s/notosanstc/v36/-nF7OG829Oofr2wohFbTp9iFOSsLA_ZJ1g.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Noto Sans TC';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/notosanstc/v36/-nF7OG829Oofr2wohFbTp9iFOSsLA_ZJ1g.ttf) format('truetype');
-}
-@font-face {
-  font-family: 'Noto Sans TC';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: url(https://fonts.gstatic.com/s/notosanstc/v36/-nF7OG829Oofr2wohFbTp9iFOSsLA_ZJ1g.ttf) format('truetype');
+  src: url(../assets/fonts/NotoSansTC-subset.woff2) format('woff2');
 }
 
 :root {

@@ -11,6 +11,9 @@ const { STYLE_PROPS } = require('./config');
 async function extractLayout(page, selectors) {
   const result = {};
 
+  // 等 web font 載完再量：font-display: swap 會先用備援字型排版，太早量會量到備援字型的寬度。
+  await page.evaluate(() => document.fonts.ready);
+
   for (const selector of selectors) {
     const locator = page.locator(selector).first();
     const count = await locator.count();
